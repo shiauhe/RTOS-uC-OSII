@@ -129,7 +129,7 @@ void InputFile() {
 
             if (i == 0) {
                 TASK_NUMBER++;
-                TaskParameter[j].TaskID = TASK_NUMBER;
+                TaskParameter[j].TaskID = TaskInfo[i];
             }
             else if (i == 1) {
                 TaskParameter[j].TaskArriveTime = TaskInfo[i];
@@ -150,7 +150,7 @@ void InputFile() {
         index = j-1;
         maxprio++;
 		while (index >= 0) {
-            if (TaskParameter[j].TaskPeriodic < TaskParameter[index].TaskPeriodic&& TaskParameter[j].TaskPeriodic!=0) {
+            if (TaskParameter[j].TaskPeriodic < TaskParameter[index].TaskPeriodic&& TaskParameter[j].TaskPeriodic!=0&& TaskParameter[j].TaskPriority>TaskParameter[index].TaskPriority) {
                 int temp = TaskParameter[index].TaskPriority;
 				TaskParameter[index].TaskPriority = TaskParameter[j].TaskPriority;
 				TaskParameter[j].TaskPriority = temp;

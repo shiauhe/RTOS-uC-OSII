@@ -128,10 +128,10 @@ int  main (void)
         TASK_STACKSIZE,
         &TaskParameter[i],
         (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
+        //printf("%d and %d\n", OSTCBPrioTbl[TaskParameter[i].TaskPriority]->OSTCBId, OSTCBPrioTbl[TaskParameter[i].TaskPriority]->OSTCBPrio);
 
     }
-    printf("Tick\tCurrentTask ID\tNeztTask ID\tNumber of ctx switch\n");
-    fprintf(Output_fp, "Tick\tCurrentTask ID\tNextTask ID\tNumber of ctx switch\n");
+    printf("Tick\tEvent\t\tCurrentTask ID\tNextTask ID\tResponseTime\tPreemptionTime\tOSTimeDly\n");
 
 #if OS_TASK_NAME_EN > 0u
     OSTaskNameSet(         APP_CFG_STARTUP_TASK_PRIO,

@@ -396,11 +396,26 @@ INT8U  OSTaskCreateExt (void   (*task)(void *p_arg),
         if (p_arg != NULL) {
             task_para_set* para = (task_para_set*)p_arg;
             OSTCBPrioTbl[prio]->Next_release = para->TaskArriveTime;
-			OSTCBPrioTbl[prio]->TaskExecutionTime = para->TaskExecutionTime;
-            if(para->TaskArriveTime==0)
-			{
-				OSTCBPrioTbl[prio]->TASKWorkLoad += para->TaskExecutionTime;
-			}
+            OSTCBPrioTbl[prio]->OSTCBDly += para->TaskArriveTime;
+
+            OSTCBPrioTbl[prio]->TaskExecutionTime = para->TaskExecutionTime;
+            OSTCBPrioTbl[prio]->TaskPeriodic = para->TaskPeriodic;
+            OSTCBPrioTbl[prio]->JobNum = 0;
+            if (para->TaskArriveTime == 0) {
+                OSTCBPrioTbl[prio]->TASKWorkLoad += para->TaskExecutionTime;
+            }
+            else {
+                OS_ENTER_CRITICAL();
+                INT8U y = OSTCBPrioTbl[prio]->OSTCBY;        /* Delay current task                                 */
+                OSRdyTbl[y] &= (OS_PRIO)~OSTCBPrioTbl[prio]->OSTCBBitX;
+                OS_TRACE_TASK_SUSPENDED(OSTCBPrioTbl[prio]);
+                if (OSRdyTbl[y] == 0u) {
+                    OSRdyGrp &= (OS_PRIO)~OSTCBPrioTbl[prio]->OSTCBBitY;
+                }
+                //OS_TRACE_TASK_DLY(ticks);
+                OS_EXIT_CRITICAL();
+            }
+
         }
         
             if (err == OS_ERR_NONE) {

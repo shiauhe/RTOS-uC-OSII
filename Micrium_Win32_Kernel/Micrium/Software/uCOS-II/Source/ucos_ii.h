@@ -64,7 +64,7 @@ extern "C" {
 */
 
 
-#define SYSTEM_END_TIME 60
+#define SYSTEM_END_TIME 30
 
 FILE* fp;
 #define INPUT_FILE_NAME "./TaskSet.txt"
@@ -637,7 +637,8 @@ typedef struct os_tcb {
     INT16U		   Next_release;
 	INT16U		   TaskExecutionTime;
 	INT16U         TASKWorkLoad;
-
+    INT16U         TaskPeriodic;
+    INT16U         JobNum;
 
     INT8U            OSTCBStat;             /* Task      status                                        */
     INT8U            OSTCBStatPend;         /* Task PEND status                                        */
@@ -760,6 +761,8 @@ OS_EXT  OS_PRIO           OSRdyGrp;                        /* Ready list group  
 OS_EXT  OS_PRIO           OSRdyTbl[OS_RDY_TBL_SIZE];       /* Table of tasks which are ready to run    */
 
 OS_EXT  BOOLEAN           OSRunning;                       /* Flag indicating that kernel is running   */
+OS_EXT  BOOLEAN           OSMissDeadLine;
+OS_EXT  OS_TCB           *OSTCBMissDeadLine;
 
 OS_EXT  INT8U             OSTaskCtr;                       /* Number of tasks created                  */
 

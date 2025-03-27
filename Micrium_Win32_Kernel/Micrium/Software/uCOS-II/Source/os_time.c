@@ -68,16 +68,16 @@ void  OSTimeDly (INT32U ticks)
     }
 
     if (ticks > 0u) {                            /* 0 means no delay!                                  */
-        OS_ENTER_CRITICAL();
-        y            =  OSTCBCur->OSTCBY;        /* Delay current task                                 */
-        OSRdyTbl[y] &= (OS_PRIO)~OSTCBCur->OSTCBBitX;
-        OS_TRACE_TASK_SUSPENDED(OSTCBCur);
-        if (OSRdyTbl[y] == 0u) {
-            OSRdyGrp &= (OS_PRIO)~OSTCBCur->OSTCBBitY;
-        }
-        OSTCBCur->OSTCBDly = ticks;              /* Load ticks in TCB                                  */
-        OS_TRACE_TASK_DLY(ticks);
-        OS_EXIT_CRITICAL();
+        //OS_ENTER_CRITICAL();
+        ////y            =  OSTCBCur->OSTCBY;        /* Delay current task                                 */
+        ////OSRdyTbl[y] &= (OS_PRIO)~OSTCBCur->OSTCBBitX;
+        ////OS_TRACE_TASK_SUSPENDED(OSTCBCur);
+        ////if (OSRdyTbl[y] == 0u) {
+        ////    OSRdyGrp &= (OS_PRIO)~OSTCBCur->OSTCBBitY;
+        ////}
+        //OSTCBCur->OSTCBDly = ticks;              /* Load ticks in TCB                                  */
+        //OS_TRACE_TASK_DLY(ticks);
+        //OS_EXIT_CRITICAL();
 
         int OSTime1 = OSTimeGet();;
         while (OSTime1 == OSTimeGet()) {

@@ -560,30 +560,38 @@ void  OSTaskSwHook(void)
 	INT8U oldtask, newtask;
 	INT32U oldjobcount, newjobcount;
 
-	oldtask = OSTCBCur->OSTCBPrio;
-	oldjobcount = OSTCBCur->OSTCBCtxSwCtr - 1;
-	newtask = OSTCBHighRdy->OSTCBPrio;
-	newjobcount = OSTCBHighRdy->OSTCBCtxSwCtr - 1;
+
 	if (firstenter) {
-		printf("%2d\t**********\ttask(%2d)(%2d)\t%d\n", OSTime, newtask, newjobcount, CtxSwCount);
-		fprintf(Output_fp, "%2d\t**********\ttask(%2d)(%2d)\t%d\n", OSTime, newtask, newjobcount, CtxSwCount);
+		//printf("%2d\t**********\ttask(%2d)(%2d)\t%d\n", OSTime, newtask, newjobcount, CtxSwCount);
+		//fprintf(Output_fp, "%2d\t**********\ttask(%2d)(%2d)\t%d\n", OSTime, newtask, newjobcount, CtxSwCount);
 		CtxSwCount--;
 		firstenter = FALSE;
 	}
 	else {
-		if (oldtask == 63) {
-			printf("%2d\ttask(%2d)\ttask(%2d)(%2d)\t%d\n", OSTime, oldtask, newtask, newjobcount, CtxSwCount);
-			fprintf(Output_fp, "%2d\ttask(%2d)\ttask(%2d)(%2d)\t%d\n", OSTime, oldtask, newtask, newjobcount, CtxSwCount);
+		if (OSTCBCur->OSTCBPrio == 63) {
+			printf("%2d\tPreemption\ttask(%2d)\ttask(%2d)(%2d)\t\n", OSTime, OSTCBCur->OSTCBPrio, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum);
+			fprintf(Output_fp, "%2d\tPreemption\ttask(%2d)\ttask(%2d)(%2d)\t\n", OSTime, OSTCBCur->OSTCBPrio, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum);
 		}
-		else if (newtask == 63) {
-			printf("%2d\ttask(%2d)(%2d)\ttask(%2d)\t%d\n", OSTime, oldtask, oldjobcount, newtask, CtxSwCount);
-			fprintf(Output_fp, "%2d\ttask(%2d)(%2d)\ttask(%2d)\t%d\n", OSTime, oldtask, oldjobcount, newtask, CtxSwCount);
+		else if (OSTCBHighRdy->OSTCBPrio == 63) {
+			printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBPrio
+				, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+			fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBPrio
+				, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+			OSTCBCur->JobNum += 1;
 		}
 		else {
-			printf("%2d\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\n", OSTime, oldtask, oldjobcount, newtask, newjobcount, CtxSwCount);
-			fprintf(Output_fp, "%2d\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\n", OSTime, oldtask, oldjobcount, newtask, newjobcount, CtxSwCount);
+			if (OSTCBCur->TASKWorkLoad > 0 && OSTCBCur->OSTCBDly != 0) {
+				printf("%2d\tPreemption\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum);
+				fprintf(Output_fp, "%2d\tPreemption\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum);
+			}
+			else {
+				printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum
+					, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+				fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum
+					, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+				OSTCBCur->JobNum += 1;
+			}
 		}
-
 	}
 	CtxSwCount++;
 #if (OS_APP_HOOKS_EN > 0u)
@@ -722,7 +730,7 @@ void  OSStartHighRdy(void)
 	OSTCBCur->OSTCBCtxSwCtr++;
 	OSTaskSwHook();
 	OSRunning = 1;
-
+	OSMissDeadLine = 0;
 
 	p_stk = (OS_TASK_STK*)OSTCBHighRdy->OSTCBStkPtr;                   /* OSTCBCur  = OSTCBHighRdy;                                */
 	/* OSPrioCur = OSPrioHighRdy;                               */

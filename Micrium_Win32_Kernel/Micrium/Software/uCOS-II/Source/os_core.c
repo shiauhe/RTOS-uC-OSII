@@ -727,7 +727,21 @@ void  OSIntExit (void)
                     OS_TRACE_ISR_EXIT_TO_SCHEDULER();
   
                 } else {
+                    if (OSTCBCur->OSTCBDly == 0)
+                    {
+                        printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBCur->OSTCBId, OSTCBCur->JobNum + 1
+                            , OSTCBCur->TaskPeriodic -OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly-OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+                        fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBCur->OSTCBId, OSTCBCur->JobNum + 1
+                            , OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+                        OSTCBCur->JobNum += 1;
+                    }
+
                     OS_TRACE_ISR_EXIT();
+                }
+                if (OSMissDeadLine) {
+                    printf("%2d\tMissDeadline\ttask(%2d)(%2d)\t-------------------\n", OSTime, OSTCBMissDeadLine->OSTCBId, OSTCBMissDeadLine->JobNum);
+                    fprintf(Output_fp, "%2d\tMissDeadline\ttask(%2d)(%2d)\t-------------------\n", OSTime, OSTCBMissDeadLine->OSTCBId, OSTCBMissDeadLine->JobNum);
+                    exit(0);
                 }
             } else {
                 OS_TRACE_ISR_EXIT();
@@ -961,7 +975,7 @@ void  OSTimeTick (void)
     OS_TRACE_TICK_INCREMENT(OSTime);
     OS_EXIT_CRITICAL();
 #endif
-    printf("\nTICK %d TASK %d\n", OSTime, OSPrioCur);
+    //printf("\nTICK %d TASK %d\n", OSTime, OSTCBCur->OSTCBId);
 
     if (OSRunning == OS_TRUE) {
 #if OS_TICK_STEP_EN > 0u
@@ -994,6 +1008,30 @@ void  OSTimeTick (void)
 
             if (ptcb->OSTCBPrio == OSPrioCur) {
                 ptcb->TASKWorkLoad-=1;
+                if (ptcb->TASKWorkLoad==0) {
+
+                    OS_ENTER_CRITICAL();
+                    INT8U y = OSTCBCur->OSTCBY;        /* Delay current task                                 */
+                    OSRdyTbl[y] &= (OS_PRIO)~OSTCBCur->OSTCBBitX;
+                    OS_TRACE_TASK_SUSPENDED(OSTCBCur);
+                    if (OSRdyTbl[y] == 0u) {
+                        OSRdyGrp &= (OS_PRIO)~OSTCBCur->OSTCBBitY;
+                    }
+                    //OS_TRACE_TASK_DLY(ticks);
+                    OS_EXIT_CRITICAL();
+
+                }
+            }
+            if (ptcb->OSTCBDly == 0u) {
+                OS_ENTER_CRITICAL();
+                //y            =  OSTCBCur->OSTCBY;        /* Delay current task                                 */
+                //OSRdyTbl[y] &= (OS_PRIO)~OSTCBCur->OSTCBBitX;
+                //OS_TRACE_TASK_SUSPENDED(OSTCBCur);
+                //if (OSRdyTbl[y] == 0u) {
+                //    OSRdyGrp &= (OS_PRIO)~OSTCBCur->OSTCBBitY;
+                //}
+                ptcb->OSTCBDly += ptcb->TaskPeriodic;              /* Load ticks in TCB                                  */
+                OS_EXIT_CRITICAL();
             }
 
             if (ptcb->OSTCBDly != 0u) {                    /* No, Delayed or waiting for event with TO     */
@@ -1006,19 +1044,17 @@ void  OSTimeTick (void)
                     } else {
                         ptcb->OSTCBStatPend = OS_STAT_PEND_OK;
                     }
-                    
-                    INT8U prio = ptcb->OSTCBPrio;
-                    int higher_task_exist = 0;
-                    for (INT8U i = 0; i < prio; i++) {
-                        OS_TCB* t = OSTCBPrioTbl[i];  
-                        if (t != NULL && (OSRdyTbl[t->OSTCBY] & t->OSTCBBitX)) {
-                            higher_task_exist = 1;
-                            break;
-                        }
-                    }
-					ptcb->TASKWorkLoad += ptcb->TaskExecutionTime;
+                   if(ptcb->TASKWorkLoad==0)
+                   {
+                        ptcb->TASKWorkLoad += ptcb->TaskExecutionTime;
+                   }
+                   else
+                   {
+                       OSTCBMissDeadLine = ptcb;
+                       OSMissDeadLine = 1;
+                   }
 
-                    if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY&& !higher_task_exist) {  /* Is task suspended?       */
+                    if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY) {  /* Is task suspended?       */
                         OSRdyGrp               |= ptcb->OSTCBBitY;             /* No,  Make ready          */
                         OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
                         OS_TRACE_TASK_READY(ptcb);
@@ -1028,7 +1064,9 @@ void  OSTimeTick (void)
                 }
             }
 
-            printf("TASK %2d: TCBDly %d Next_Release %d Exec %d Work_Load %d\n", ptcb->OSTCBId, ptcb->OSTCBDly, ptcb->Next_release, ptcb->TaskExecutionTime, ptcb->TASKWorkLoad);
+
+
+            //printf("TASK %2d: TCBDly %d Next_Release %d Exec %d Work_Load %d\n", ptcb->OSTCBId, ptcb->OSTCBDly, ptcb->Next_release, ptcb->TaskExecutionTime, ptcb->TASKWorkLoad);
             ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list                */
             OS_EXIT_CRITICAL();
         }
@@ -1738,7 +1776,7 @@ void  OS_Sched (void)
     OS_CPU_SR  cpu_sr = 0u;
 #endif
 
-    printf("OS_Sched\n");
+    //printf("OS_Sched\n");
 
     OS_ENTER_CRITICAL();
     if (OSIntNesting == 0u) {                          /* Schedule only if all ISRs done and ...       */
@@ -1746,6 +1784,7 @@ void  OS_Sched (void)
             OS_SchedNew();
             OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];
             if (OSPrioHighRdy != OSPrioCur) {          /* No Ctx Sw if current task is highest rdy     */
+
 #if OS_TASK_PROFILE_EN > 0u
                 OSTCBHighRdy->OSTCBCtxSwCtr++;         /* Inc. # of context switches to this task      */
 #endif
@@ -1759,6 +1798,8 @@ void  OS_Sched (void)
 #endif
                 OS_TASK_SW();                          /* Perform a context switch                     */
                 }
+
+            
         }
     }
     OS_EXIT_CRITICAL();
