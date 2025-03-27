@@ -1,0 +1,1 @@
+D:\graduate\μC_OS-II\Micrium_Win32_Kernel\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe
