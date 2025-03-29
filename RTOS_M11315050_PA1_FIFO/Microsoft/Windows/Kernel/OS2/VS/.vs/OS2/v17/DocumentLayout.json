@@ -1,0 +1,72 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\graduate\\\u03BCC_OS-II\\RTOS_M11315050_PA1_FIFO\\Microsoft\\Windows\\Kernel\\OS2\\VS\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5129D7B8-8E33-4F0F-9072-FC39426C859A}|OS2.vcxproj|D:\\graduate\\\u03BCC_OS-II\\RTOS_M11315050_PA1_FIFO\\Micrium\\Software\\uCOS-II\\Source\\os_core.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5129D7B8-8E33-4F0F-9072-FC39426C859A}|OS2.vcxproj|D:\\graduate\\\u03BCC_OS-II\\RTOS_M11315050_PA1_FIFO\\Micrium\\Software\\uCOS-II\\Ports\\Win32\\Visual Studio\\os_cpu_c.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5129D7B8-8E33-4F0F-9072-FC39426C859A}|OS2.vcxproj|D:\\graduate\\\u03BCC_OS-II\\RTOS_M11315050_PA1_FIFO\\Microsoft\\Windows\\Kernel\\OS2\\main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "os_core.c",
+              "DocumentMoniker": "D:\\graduate\\\u03BCC_OS-II\\RTOS_M11315050_PA1_FIFO\\Micrium\\Software\\uCOS-II\\Source\\os_core.c",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\Micrium\\Software\\uCOS-II\\Source\\os_core.c",
+              "ToolTip": "D:\\graduate\\\u03BCC_OS-II\\RTOS_M11315050_PA1_FIFO\\Micrium\\Software\\uCOS-II\\Source\\os_core.c",
+              "RelativeToolTip": "..\\..\\..\\..\\..\\Micrium\\Software\\uCOS-II\\Source\\os_core.c",
+              "ViewState": "AgIAABoHAAAAAAAAAAAAwCUHAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-03-29T07:44:06.807Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "os_cpu_c.c",
+              "DocumentMoniker": "D:\\graduate\\\u03BCC_OS-II\\RTOS_M11315050_PA1_FIFO\\Micrium\\Software\\uCOS-II\\Ports\\Win32\\Visual Studio\\os_cpu_c.c",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\Micrium\\Software\\uCOS-II\\Ports\\Win32\\Visual Studio\\os_cpu_c.c",
+              "ToolTip": "D:\\graduate\\\u03BCC_OS-II\\RTOS_M11315050_PA1_FIFO\\Micrium\\Software\\uCOS-II\\Ports\\Win32\\Visual Studio\\os_cpu_c.c",
+              "RelativeToolTip": "..\\..\\..\\..\\..\\Micrium\\Software\\uCOS-II\\Ports\\Win32\\Visual Studio\\os_cpu_c.c",
+              "ViewState": "AgIAABkCAAAAAAAAAAAzwCsCAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-03-29T07:48:44.921Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "main.c",
+              "DocumentMoniker": "D:\\graduate\\\u03BCC_OS-II\\RTOS_M11315050_PA1_FIFO\\Microsoft\\Windows\\Kernel\\OS2\\main.c",
+              "RelativeDocumentMoniker": "..\\main.c",
+              "ToolTip": "D:\\graduate\\\u03BCC_OS-II\\RTOS_M11315050_PA1_FIFO\\Microsoft\\Windows\\Kernel\\OS2\\main.c",
+              "RelativeToolTip": "..\\main.c",
+              "ViewState": "AgIAAHgAAAAAAAAAAAAxwIwAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-03-29T07:42:52.933Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
