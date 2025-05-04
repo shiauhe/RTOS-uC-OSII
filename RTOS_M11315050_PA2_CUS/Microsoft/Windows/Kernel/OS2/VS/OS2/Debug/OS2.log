@@ -1,0 +1,4 @@
+﻿  os_core.c
+D:\graduate\μC_OS-II\RTOS_M11315050_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(745,21): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
+D:\graduate\μC_OS-II\RTOS_M11315050_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(754,59): warning C4013: 'malloc' 未定義; 假設 extern 傳回整數
+  OS2.vcxproj -> D:\graduate\μC_OS-II\RTOS_M11315050_PA2_CUS\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe
