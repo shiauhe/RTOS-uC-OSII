@@ -729,10 +729,19 @@ void  OSIntExit (void)
                 } else {
                     if (OSTCBCur->OSTCBDly == 0&& OSTCBCur->OSTCBPrio!=63)
                     {
-                        printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBCur->OSTCBId, OSTCBCur->JobNum + 1
-                            , OSTCBCur->TaskPeriodic -OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly-OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
-                        fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBCur->OSTCBId, OSTCBCur->JobNum + 1
-                            , OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+                        if (OSTCBCur->OSTCBPrio==Sever_Priority) {
+                            printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\tN/A\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBCur->OSTCBId, OSTCBCur->JobNum + 1
+                                , OSTime - Rdyhead->data->TaskArriveTime, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime);
+                            fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\tN/A\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBCur->OSTCBId, OSTCBCur->JobNum + 1
+                                , OSTime-Rdyhead->data->TaskArriveTime, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime);
+                            Rdyhead = Rdyhead->link;
+                        }
+                        else {
+                            printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBCur->OSTCBId, OSTCBCur->JobNum + 1
+                                , OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+                            fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBCur->OSTCBId, OSTCBCur->JobNum + 1
+                                , OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+                        }
                         OSTCBCur->JobNum += 1;
                     }
 
@@ -748,7 +757,7 @@ void  OSIntExit (void)
                     if (Aperiodic_TaskParameter[i].TaskArriveTime == OSTimeGet()) {
                         if(Max_DeadLine<OSTime)
 							Max_DeadLine = OSTime;
-                        if (Max_DeadLine + Aperiodic_TaskParameter[i].TaskExecutionTime * 100 / Sever_U >= Aperiodic_TaskParameter[i].TaskPeriodic) {
+                        if (Max_DeadLine + Aperiodic_TaskParameter[i].TaskExecutionTime * 100 / Sever_U <= Aperiodic_TaskParameter[i].TaskPeriodic) {
                             Max_DeadLine = Max_DeadLine + Aperiodic_TaskParameter[i].TaskExecutionTime * 100 / Sever_U;
                             if (Rdyhead == NULL) {
                                 NodePtr newPtr = (NodePtr)malloc(sizeof(Node));
@@ -773,6 +782,8 @@ void  OSIntExit (void)
 
                                 OSTCBPrioTbl[Sever_Priority]->OSTCBDly = Aperiodic_TaskParameter[i].TaskExecutionTime * 100 / Sever_U;
                                 OSTCBPrioTbl[Sever_Priority]->TASKWorkLoad+= Aperiodic_TaskParameter[i].TaskExecutionTime;
+                                OSTCBPrioTbl[Sever_Priority]->TaskExecutionTime = Aperiodic_TaskParameter[i].TaskExecutionTime;
+                                OSTCBPrioTbl[Sever_Priority]->TaskPeriodic = Aperiodic_TaskParameter[i].TaskExecutionTime * 100 / Sever_U;
                             }
                             else {
 								printf("%2d\tAperiodic job(%d) arrives. Do nothing.\n", OSTime, Aperiodic_TaskParameter[i].TaskID);
@@ -793,6 +804,8 @@ void  OSIntExit (void)
                         fprintf(Output_fp,"%2d\tAperiodic job(%d) sets CUS sever's deadline as %d.\n", OSTime, Rdyhead->data->TaskID, OSTime + Rdyhead->data->TaskExecutionTime * 100 / Sever_U);
                         OSTCBPrioTbl[Sever_Priority]->OSTCBDly = Rdyhead->data->TaskExecutionTime * 100 / Sever_U;
                         OSTCBPrioTbl[Sever_Priority]->TASKWorkLoad += Rdyhead->data->TaskExecutionTime;
+                        OSTCBPrioTbl[Sever_Priority]->TaskExecutionTime = Rdyhead->data->TaskExecutionTime;
+                        OSTCBPrioTbl[Sever_Priority]->TaskPeriodic = Rdyhead->data->TaskExecutionTime * 100 / Sever_U;
                     }
                 }
             } else {
@@ -1065,7 +1078,7 @@ void  OSTimeTick (void)
                     if (ptcb->OSTCBPrio == Sever_Priority) {
                         printf("%2d\tAperiodic job(%d) is finished\n", OSTime, Rdyhead->data->TaskID);
 						fprintf(Output_fp, "%2d\tAperiodic job(%d) is finished\n", OSTime, Rdyhead->data->TaskID);
-						Rdyhead = Rdyhead->link;
+
                     }
                      OS_ENTER_CRITICAL();
                     INT8U y = OSTCBCur->OSTCBY;        /* Delay current task                                 */
@@ -1911,7 +1924,7 @@ static  void  OS_SchedNew (void)
                     MIN_ID = ptcb->OSTCBId;
                     OSPrioHighRdy = prio;
                 }
-                else if (ptcb->OSTCBDly == MAX_Arrived && ptcb->OSTCBId < MIN_ID) {
+                else if (ptcb->OSTCBDly == MAX_Arrived && (ptcb->OSTCBId < MIN_ID|| OSPrioHighRdy==Sever_Priority)) {
                     MAX_Arrived = ptcb->OSTCBDly;
                     MIN_ID = ptcb->OSTCBId;
                     OSPrioHighRdy = prio;
@@ -1931,7 +1944,7 @@ static  void  OS_SchedNew (void)
                     MIN_ID = ptcb->OSTCBId;
                     OSPrioHighRdy = prio;
                 }
-                else if (ptcb->OSTCBDly == MAX_Arrived && ptcb->OSTCBId < MIN_ID&& ptcb->OSTCBDly != 0 ) {
+                else if (ptcb->OSTCBDly == MAX_Arrived && (ptcb->OSTCBId < MIN_ID || OSPrioHighRdy == Sever_Priority) && ptcb->OSTCBDly != 0 ) {
                     MAX_Arrived =  ptcb->OSTCBDly;
                     MIN_ID = ptcb->OSTCBId;
                     OSPrioHighRdy = prio;

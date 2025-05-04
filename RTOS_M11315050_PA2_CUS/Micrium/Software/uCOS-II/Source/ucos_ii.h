@@ -65,7 +65,7 @@ extern "C" {
 
 
 #define SYSTEM_END_TIME 40
-#define DEBUG 1
+#define DEBUG 0
 #define APERIODIC_FILE_NAME "./Aperiodicjobs.txt"
 FILE* fp,*fp2;
 #define INPUT_FILE_NAME "./TaskSet.txt"

@@ -573,10 +573,19 @@ void  OSTaskSwHook(void)
 			fprintf(Output_fp, "%2d\tPreemption\ttask(%2d)\t\ttask(%2d)(%2d)\t\n", OSTime, OSTCBCur->OSTCBPrio, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum);
 		}
 		else if (OSTCBHighRdy->OSTCBPrio == 63) {
-			printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBPrio
-				, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
-			fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)\t\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBPrio
-				, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+			if (OSTCBCur->OSTCBPrio == Sever_Priority) {
+				printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBPrio
+					, OSTime - Rdyhead->data->TaskArriveTime, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+				fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)\t\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBPrio
+					, OSTime - Rdyhead->data->TaskArriveTime, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+				Rdyhead = Rdyhead->link;
+			}
+			else {
+				printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBPrio
+					, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+				fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)\t\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBPrio
+					, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+			}
 			OSTCBCur->JobNum += 1;
 		}
 		else {
@@ -587,10 +596,19 @@ void  OSTaskSwHook(void)
 				}
 			}
 			else {
-				printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum
-					, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
-				fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum
-					, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+				if (OSTCBCur->OSTCBPrio == Sever_Priority) {
+					printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\tN/A\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum
+						, OSTime - Rdyhead->data->TaskArriveTime, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime);
+					fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\tN/A\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum
+						, OSTime - Rdyhead->data->TaskArriveTime, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime);
+					Rdyhead = Rdyhead->link;
+				}
+				else {
+					printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum
+						, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+					fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum
+						, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+				}
 				OSTCBCur->JobNum += 1;
 			}
 		}
