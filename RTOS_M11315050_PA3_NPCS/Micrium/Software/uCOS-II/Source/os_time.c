@@ -58,7 +58,7 @@ void  OSTimeDly (INT32U ticks)
 #if OS_CRITICAL_METHOD == 3u                     /* Allocate storage for CPU status register           */
     OS_CPU_SR  cpu_sr = 0u;
 #endif
-    printf("Waiting for %d ticks\n", ticks);
+    
 
 
     if (OSIntNesting > 0u) {                     /* See if trying to call from an ISR                  */
@@ -67,7 +67,6 @@ void  OSTimeDly (INT32U ticks)
     if (OSLockNesting > 0u) {                    /* See if called with scheduler locked                */
         return;
     }
-    printf("Waiting for %d hs ticks\n", ticks);
 
     if (ticks > 0u) {                            /* 0 means no delay!                                  */
         //OS_ENTER_CRITICAL();
@@ -82,11 +81,13 @@ void  OSTimeDly (INT32U ticks)
         //OS_EXIT_CRITICAL();
 
         int OSTime1 = OSTimeGet();;
-        printf("Waiting for %d fsfs ticks\n", ticks);
+        if(DEBUG)
+        printf("Waiting for %d OStimeticks\n", ticks);
 
         while (OSTime1 == OSTimeGet()) {
         };
-        printf("Waiting for %d fnticks\n", ticks);
+        if(DEBUG)
+        printf("OStimeticks finish\n");
 
         OS_Sched();                              /* Find next task to run!                             */
     }

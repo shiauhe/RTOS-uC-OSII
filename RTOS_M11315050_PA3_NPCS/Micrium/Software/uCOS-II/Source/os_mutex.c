@@ -701,6 +701,7 @@ INT8U  OSMutexPost (OS_EVENT *pevent)
     pevent->OSEventCnt |= OS_MUTEX_AVAILABLE;         /* No,  Mutex is now available                   */
     pevent->OSEventPtr  = (void *)0;
     OS_EXIT_CRITICAL();
+    OS_Sched();
     OS_TRACE_MUTEX_POST_EXIT(OS_ERR_NONE);
     return (OS_ERR_NONE);
 }

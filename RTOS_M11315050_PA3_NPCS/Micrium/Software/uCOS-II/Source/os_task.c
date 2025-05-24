@@ -399,6 +399,7 @@ INT8U  OSTaskCreateExt (void   (*task)(void *p_arg),
             OSTCBPrioTbl[prio]->TaskExecutionTime = para->TaskExecutionTime;
             OSTCBPrioTbl[prio]->TaskPeriodic = para->TaskPeriodic;
             OSTCBPrioTbl[prio]->JobNum = 0;
+            OSTCBPrioTbl[prio]->Blocked = 0;
             if (para->TaskArriveTime == 0) {
                 OSTCBPrioTbl[prio]->TASKWorkLoad += para->TaskExecutionTime;
             }

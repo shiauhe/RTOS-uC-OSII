@@ -158,22 +158,23 @@ void InputFile() {
             i++;
         }
 
-        /* Initial Priority */
-        static int maxprio = 2, index;
-        TaskParameter[j].TaskPriority = maxprio;
-
-        index = j-1;
-        maxprio++;
-		while (index >= 0) {
-            if (TaskParameter[j].TaskPeriodic < TaskParameter[index].TaskPeriodic&& TaskParameter[j].TaskPeriodic!=0&& TaskParameter[j].TaskPriority>TaskParameter[index].TaskPriority) {
-                int temp = TaskParameter[index].TaskPriority;
-				TaskParameter[index].TaskPriority = TaskParameter[j].TaskPriority;
-				TaskParameter[j].TaskPriority = temp;
-			}
-			index--;
-        }
 
         j++;
+    }
+
+    for (int m = 0; m < TASK_NUMBER; m++) {
+        for (int n = m + 1; n < TASK_NUMBER; n++) {
+            if (TaskParameter[m].TaskPeriodic > TaskParameter[n].TaskPeriodic &&
+                TaskParameter[n].TaskPeriodic != 0) {
+                task_para_set taskTemp = TaskParameter[m];
+                TaskParameter[m] = TaskParameter[n];
+                TaskParameter[n] = taskTemp;
+            }
+        }
+    }
+
+    for (int m = 0; m < TASK_NUMBER; m++) {
+        TaskParameter[m].TaskPriority = m + 2;  
     }
 
 	for (int i = 0; i < TASK_NUMBER; i++) {

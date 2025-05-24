@@ -70,8 +70,8 @@ FILE* fp;
 #define INPUT_FILE_NAME "./TaskSet.txt"
 #define OUTPUT_FILE_NAME "./Output.txt"
 #define MAX 30
-#define INFO 8
-
+#define INFO 10
+#define DEBUG 0
 FILE* Output_fp;
 errno_t Output_err;
 
@@ -645,6 +645,7 @@ typedef struct os_tcb {
 	INT16U         TASKWorkLoad;
     INT16U         TaskPeriodic;
     INT16U         JobNum;
+    INT16U         Blocked;
 
     INT8U            OSTCBStat;             /* Task      status                                        */
     INT8U            OSTCBStatPend;         /* Task PEND status                                        */

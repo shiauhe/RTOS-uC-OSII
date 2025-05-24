@@ -574,10 +574,11 @@ void  OSTaskSwHook(void)
 		}
 		else if (OSTCBHighRdy->OSTCBPrio == 63) {
 			printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBPrio
-				, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+				, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->Blocked, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime - OSTCBCur->Blocked);
 			fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBPrio
-				, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+				, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->Blocked, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime-OSTCBCur->Blocked);
 			OSTCBCur->JobNum += 1;
+			OSTCBCur->Blocked = 0;
 		}
 		else {
 			if (OSTCBCur->TASKWorkLoad > 0 && OSTCBCur->OSTCBDly != 0) {
@@ -586,10 +587,11 @@ void  OSTaskSwHook(void)
 			}
 			else {
 				printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum
-					, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+					, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->Blocked, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime - OSTCBCur->Blocked);
 				fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBHighRdy->OSTCBId, OSTCBHighRdy->JobNum
-					, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+					, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->Blocked, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime - OSTCBCur->Blocked);
 				OSTCBCur->JobNum += 1;
+				OSTCBCur->Blocked = 0;
 			}
 		}
 	}

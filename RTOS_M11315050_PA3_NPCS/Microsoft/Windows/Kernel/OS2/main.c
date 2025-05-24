@@ -139,10 +139,10 @@ int  main (void)
 
     }
     R1 = OSMutexCreate(0, &err);
-    printf("ERR: %d", err);
+    printf("ERR: %d\n", err);
     R2 = OSMutexCreate(1, &err);
-    printf("ERR: %d", err);
-    printf("Tick\tEvent\t\tCurrentTask ID\tNextTask ID\tResponseTime\tPreemptionTime\tOSTimeDly\n");
+    printf("ERR: %d\n", err);
+    printf("Tick\tEvent\t\tCurrentTask ID\tNextTask ID\tResponseTime\BlockingTime\tPreemption\n");
 
 #if OS_TASK_NAME_EN > 0u
     OSTaskNameSet(         APP_CFG_STARTUP_TASK_PRIO,
@@ -201,38 +201,47 @@ void task(void* p_arg) {
 	int count = 0;
     OS_ERR err;
     while (1) {
-        printf("Tick: %d, 1 from task%d\n", OSTime, task_data->TaskID);
+        if(DEBUG)
+        printf("Tick: %d, start from task%d\n", OSTime, task_data->TaskID);
 		count = OSTCBCur->TaskExecutionTime - OSTCBCur->TASKWorkLoad;
         if (count == task_data->lockR1 && task_data->unlockR1 != 0) {
             printf("%2d\tTRY LockResource\ttask(%2d)(%2d) %d %d\tR1\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum,count,R_USED);
 
             OSMutexPend(R1, 0, &err);
             R_USED++;
-            printf("%2d\tLockResource\ttask(%2d)(%2d)\tR1\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum);
+            printf("%2d\tLockResource\ttask(%2d)(%2d) %d %d\tR1\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, count, R_USED);
+            fprintf(Output_fp,"%2d\tLockResource\ttask(%2d)(%2d) R1\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum);
+
         }
         if (count == task_data->lockR2 && task_data->unlockR2 != 0) {
             printf("%2d\tTRY LockResource\ttask(%2d)(%2d) %d %d\tR2\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum,count,R_USED);
 
             OSMutexPend(R2, 0, &err);
 			R_USED++;
-            printf("%2d\tLockResource\ttask(%2d)(%2d)\tR2\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum);
+            printf("%2d\tLockResource\ttask(%2d)(%2d) %d %d\tR2\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, count, R_USED);
+            fprintf(Output_fp,"%2d\tLockResource\ttask(%2d)(%2d) R2\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum);
+
         }
         if (count == task_data->unlockR1 && task_data->unlockR1 != 0) {
-            printf("%2d\tUnlockResource\ttask(%2d)(%2d)\tR1\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum);
+            printf("%2d\tTRY UnlockResource\ttask(%2d)(%2d)\tR1\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum);
             R_USED--;
+            printf("%2d\tUnlockResource\ttask(%2d)(%2d) %d\tR1\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, err);
+            fprintf(Output_fp, "%2d\tUnlockResource\ttask(%2d)(%2d) R1\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum);
             err = OSMutexPost(R1);
-            printf("%2d\tUnlockResource\ttask(%2d)(%2d) %d\tR1\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum,err);
+
 
         }
         if (count == task_data->unlockR2 && task_data->unlockR2 != 0) {
-            printf("%2d\tUnlockResource\ttask(%2d)(%2d)\tR2\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum);
+            printf("%2d\tTRY UnlockResource\ttask(%2d)(%2d)\tR2\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum);
 			R_USED--;
+            printf("%2d\tUnlockResource\ttask(%2d)(%2d) %d\tR2\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, err);
+            fprintf(Output_fp, "%2d\tUnlockResource\ttask(%2d)(%2d) R2\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum);
             err = OSMutexPost(R2);
-            printf("%2d\tUnlockResource\ttask(%2d)(%2d) %d\tR2\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum,err);
+
 
         }
-
-        printf("Tick: %d, 2 from task%d\n", OSTime, task_data->TaskID);
+        if(DEBUG)
+        printf("Tick: %d, end from task%d\n", OSTime, task_data->TaskID);
         count++;
         OSTimeDly(task_data->TaskPeriodic);
         //OSTimeDly(0);
@@ -241,21 +250,5 @@ void task(void* p_arg) {
 
 
 
-void mywait(int tick) {
-#if OS_CRITICAL_METHOD == 3
-    OS_CPU_SR  cpu_sr = 0;
-#endif
-    INT32U now, exit_time;
 
-    OS_ENTER_CRITICAL();
-    now = OSTimeGet();
-    exit_time = now + tick;
-    OS_EXIT_CRITICAL();
-
-    while (1) {
-        if (OSTimeGet() >= exit_time) {
-            break;
-        }
-    }
-}
 

@@ -730,10 +730,11 @@ void  OSIntExit (void)
                     if (OSTCBCur->OSTCBDly == 0 && OSTCBCur->OSTCBPrio!=63)
                     {
                         printf("%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBCur->OSTCBId, OSTCBCur->JobNum + 1
-                            , OSTCBCur->TaskPeriodic -OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly-OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+                            , OSTCBCur->TaskPeriodic -OSTCBCur->OSTCBDly, OSTCBCur->Blocked, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime - OSTCBCur->Blocked);
                         fprintf(Output_fp, "%2d\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t\t%d\t\t%d\n", OSTime, OSTCBCur->OSTCBId, OSTCBCur->JobNum, OSTCBCur->OSTCBId, OSTCBCur->JobNum + 1
-                            , OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime, OSTCBCur->OSTCBDly);
+                            , OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly, OSTCBCur->Blocked, OSTCBCur->TaskPeriodic - OSTCBCur->OSTCBDly - OSTCBCur->TaskExecutionTime - OSTCBCur->Blocked);
                         OSTCBCur->JobNum += 1;
+                        OSTCBCur->Blocked = 0;
                     }
 
                     OS_TRACE_ISR_EXIT();
@@ -975,6 +976,7 @@ void  OSTimeTick (void)
     OS_TRACE_TICK_INCREMENT(OSTime);
     OS_EXIT_CRITICAL();
 #endif
+    if(DEBUG)
     printf("\nTICK %d TASK %d\n", OSTime, OSTCBCur->OSTCBId);
 
     if (OSRunning == OS_TRUE) {
@@ -1005,7 +1007,8 @@ void  OSTimeTick (void)
         ptcb = OSTCBList;                                  /* Point at first TCB in TCB list               */
         while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list              */
             OS_ENTER_CRITICAL();
-
+            if (ptcb->OSTCBPrio < OSPrioCur && ptcb->TASKWorkLoad>0)
+                ptcb->Blocked++;
             if (ptcb->OSTCBPrio == OSPrioCur) {
                 ptcb->TASKWorkLoad-=1;
                 if (ptcb->TASKWorkLoad==0) {
@@ -1065,8 +1068,8 @@ void  OSTimeTick (void)
             }
 
 
-
-            //printf("TASK %2d: TCBDly %d Next_Release %d Exec %d Work_Load %d\n", ptcb->OSTCBId, ptcb->OSTCBDly, ptcb->Next_release, ptcb->TaskExecutionTime, ptcb->TASKWorkLoad);
+            if (DEBUG)
+            printf("TASK %2d: TCBDly  %d Exec %d Work_Load %d Prio %d\n", ptcb->OSTCBId, ptcb->OSTCBDly, ptcb->TaskExecutionTime, ptcb->TASKWorkLoad,ptcb->OSTCBPrio);
             ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list                */
             OS_EXIT_CRITICAL();
         }
